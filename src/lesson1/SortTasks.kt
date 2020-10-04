@@ -2,6 +2,8 @@
 
 package lesson1
 
+import java.io.File
+
 /**
  * Сортировка времён
  *
@@ -35,6 +37,7 @@ package lesson1
 fun sortTimes(inputName: String, outputName: String) {
     TODO()
 }
+
 
 /**
  * Сортировка адресов
@@ -97,7 +100,21 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 121.3
  */
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    //Время O(n)
+    //Память O(1)
+    val list = Array(7731) { 0 }
+    for (line in File(inputName).readLines()) {
+        val index = (line.toDouble() * 10 + 2730).toInt()
+        list[index]++
+    }
+    File(outputName).bufferedWriter().use {
+        for (index in list.indices) {
+            while (list[index] > 0) {
+                it.write(((index - 2730) / 10.0).toString() + "\n")
+                list[index]--
+            }
+        }
+    }
 }
 
 /**
@@ -130,8 +147,34 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  */
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    //Время O(n)
+    //Память O(n)
+    val result = mutableListOf<String>()
+    val numbers = mutableMapOf<Int, Int>()
+    var frequentNumber = 0
+    var frequency = 0
+    for (line in File(inputName).readLines()) {
+        val number = line.toInt()
+        numbers[number] = numbers.getOrDefault(number, 0) + 1
+        if (frequentNumber > number && frequency == numbers[number]) frequentNumber = number
+        if (frequency < numbers[number]!!) {
+            frequency = numbers[number]!!
+            frequentNumber = number
+        }
+        result += line
+    }
+    File(outputName).bufferedWriter().use {
+        for (line in result) {
+            if (line.toInt() != frequentNumber) {
+                it.write(line + "\n")
+            }
+        }
+        for (i in 0 until frequency) {
+            it.write(frequentNumber.toString() + "\n")
+        }
+    }
 }
+
 
 /**
  * Соединить два отсортированных массива в один
