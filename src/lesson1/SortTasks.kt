@@ -173,7 +173,6 @@ fun sortSequence(inputName: String, outputName: String) {
             it.write(frequentNumber.toString() + "\n")
         }
     }
-
 }
 
 
