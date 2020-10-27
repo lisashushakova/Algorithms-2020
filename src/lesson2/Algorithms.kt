@@ -95,7 +95,25 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * вернуть ту из них, которая встречается раньше в строке first.
  */
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    //Время O(first.length * second.length)
+    //Память O(first.length * second.length)
+    var maxMatch = 0
+    var maxIndex = 0
+    val matchMatrix = Array(first.length + 1) { IntArray(second.length + 1) }
+    for (i in 0..first.length) {
+        for (j in 0..second.length) {
+            if (i == 0 || j == 0 || first[i - 1] != second[j - 1]) {
+                matchMatrix[i][j] = 0
+            } else {
+                matchMatrix[i][j] = matchMatrix[i - 1][j - 1] + 1
+            }
+            if (matchMatrix[i][j] > maxMatch) {
+                maxMatch = matchMatrix[i][j]
+                maxIndex = i
+            }
+        }
+    }
+    return first.substring(maxIndex - maxMatch, maxIndex)
 }
 
 /**
@@ -109,5 +127,14 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Единица простым числом не считается.
  */
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+    //Время O(Nlog(logN))
+    //Память O(N)
+    if (limit <= 1) return 0
+    var numberOfPrimeNumbers = 0
+    val numbers = BooleanArray(limit - 1) { false }
+    for (i in numbers.indices) {
+        if (!numbers[i]) numberOfPrimeNumbers++
+        for (j in i until numbers.size step i + 2) numbers[j] = true
+    }
+    return numberOfPrimeNumbers
 }
