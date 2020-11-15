@@ -14,8 +14,33 @@ package lesson7
  * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
  * При сравнении подстрок, регистр символов *имеет* значение.
  */
+//Время O(first.length * second.length)
+//Память O(first.length * second.length)
 fun longestCommonSubSequence(first: String, second: String): String {
-    TODO()
+    var result = ""
+    val matchMatrix = Array(first.length + 1) { IntArray(second.length + 1) }
+    for (i in first.length - 1 downTo 0) {
+        for (j in second.length - 1 downTo 0) {
+            matchMatrix[i][j] = if (first[i] == second[j]) 1 + matchMatrix[i + 1][j + 1]
+            else maxOf(matchMatrix[i + 1][j], matchMatrix[i][j + 1])
+        }
+    }
+    var i = 0
+    var j = 0
+    while (i < first.length && j < second.length) {
+        if (first[i] == second[j]) {
+            result += first[i]
+            i++
+            j++
+        } else {
+            if (matchMatrix[i + 1][j] >= matchMatrix[i][j + 1]) {
+                i++
+            } else {
+                j++
+            }
+        }
+    }
+    return result
 }
 
 /**
@@ -30,8 +55,36 @@ fun longestCommonSubSequence(first: String, second: String): String {
  * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
  * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
  */
+//Время O(N * N)
+//Память O(N)
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
-    TODO()
+    if (list.size <= 1) return list
+    val result = mutableListOf<Int>()
+    val longestSequence = Array(list.size) { 0 }
+    val previous = Array(list.size) { 0 }
+    for (i in list.indices) {
+        longestSequence[i] = 1
+        previous[i] = -1
+        for (j in 0 until i) {
+            if (list[j] < list[i] && longestSequence[j] + 1 > longestSequence[i]) {
+                longestSequence[i] = longestSequence[j] + 1
+                previous[i] = j
+            }
+        }
+    }
+    var index = 0
+    var length = longestSequence[0]
+    for (i in list.indices) {
+        if (longestSequence[i] > length) {
+            index = i
+            length = longestSequence[i]
+        }
+    }
+    while (index != -1) {
+        result += list[index]
+        index = previous[index]
+    }
+    return result.reversed()
 }
 
 /**
