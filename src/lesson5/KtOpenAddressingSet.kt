@@ -8,6 +8,8 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         require(bits in 2..31)
     }
 
+    private class Deleted
+
     private val capacity = 1 shl bits
 
     private val storage = Array<Any?>(capacity) { null }
@@ -27,7 +29,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
     override fun contains(element: T): Boolean {
         var index = element.startingIndex()
         var current = storage[index]
-        while (current != null) {
+        while (current != null || current is Deleted) {
             if (current == element) {
                 return true
             }
@@ -55,6 +57,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
             if (current == element) {
                 return false
             }
+            if (current is Deleted) break
             index = (index + 1) % capacity
             check(index != startingIndex) { "Table is full" }
             current = storage[index]
@@ -75,8 +78,21 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя
      */
+    //Время O(N)
+    //Память O(1)
     override fun remove(element: T): Boolean {
-        TODO("not implemented")
+        var index = element.startingIndex()
+        var current = storage[index]
+        while (current != null && current !is Deleted) {
+            if (current == element) {
+                storage[index] = Deleted()
+                size--
+                return true
+            }
+            index = (index + 1) % capacity
+            current = storage[index]
+        }
+        return false
     }
 
     /**
@@ -89,7 +105,43 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя (сложная, если поддержан и remove тоже)
      */
-    override fun iterator(): MutableIterator<T> {
-        TODO("not implemented")
+    override fun iterator(): MutableIterator<T> = TableIterator()
+
+    inner class TableIterator internal constructor() : MutableIterator<T> {
+
+        private var current: T? = null
+        private var index = -1
+
+        private fun findNextIndex(bool: Boolean): Boolean {
+            var index = index + 1
+            val current: T?
+            while (index != storage.size && (storage[index] == null || storage[index] is Deleted)) index++
+            current = if (index != storage.size) storage[index] as T else null
+            if (!bool) {
+                this.current = current
+                this.index = index
+            }
+            return current != null
+        }
+
+        //Время O(1)
+        //Память O(1)
+        override fun hasNext(): Boolean = findNextIndex(true)
+
+        //Время O(N)
+        //Память O(1)
+        override fun next(): T {
+            findNextIndex(false)
+            if (current == null) throw NoSuchElementException()
+            return current as T
+        }
+
+        //Время O(1)
+        //Память O(1)
+        override fun remove() {
+            if (current == null) throw IllegalStateException()
+            remove(current)
+            current = null
+        }
     }
 }
