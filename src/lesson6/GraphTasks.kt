@@ -90,8 +90,26 @@ fun Graph.minimumSpanningTree(): Graph {
  *
  * Эта задача может быть зачтена за пятый и шестой урок одновременно
  */
+//Время O(vertices + edges)
+//Память O(vertices)
 fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
-    TODO()
+    var largestSet = setOf<Graph.Vertex>()
+    val possibleSet = mutableSetOf<Graph.Vertex>()
+    val allSets = mutableListOf<Set<Graph.Vertex>>()
+    val visited = mutableSetOf<Graph.Vertex>()
+    for (vertex in this.vertices) {
+        this.vertices.stream()
+            .filter { anotherVertex ->
+                !this.getNeighbors(vertex).contains(anotherVertex) && !visited.contains(anotherVertex)
+            }
+            .forEach { anotherVertex ->
+                visited.addAll(this.getNeighbors(anotherVertex))
+                possibleSet.add(anotherVertex)
+            }
+        allSets.add(possibleSet)
+    }
+    for (set in allSets) if (largestSet.size < set.size) largestSet = set
+    return largestSet
 }
 
 /**
@@ -114,8 +132,20 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  *
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
+//Время O(vertices + edges)
+//Память O(vertices)
 fun Graph.longestSimplePath(): Path {
-    TODO()
+    var longestPath = Path()
+    val allPaths = mutableSetOf<Path>()
+    allPaths.addAll(vertices.map { Path(it) })
+    while (allPaths.isNotEmpty()) {
+        val path = allPaths.last()
+        if (path.length > longestPath.length) longestPath = path
+        val neighbours = this.getNeighbors(path.vertices.last())
+        for (vertex in neighbours) if (!path.contains(vertex)) allPaths.add(Path(path, this, vertex))
+        allPaths.remove(path)
+    }
+    return longestPath
 }
 
 /**
