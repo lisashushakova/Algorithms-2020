@@ -2,6 +2,9 @@
 
 package lesson7
 
+import java.io.File
+import kotlin.math.min
+
 /**
  * Наибольшая общая подпоследовательность.
  * Средняя
@@ -107,9 +110,28 @@ fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
  *
  * Здесь ответ 2 + 3 + 4 + 1 + 2 = 12
  */
+//Время O(height*width)
+//Память O(height*width)
 fun shortestPathOnField(inputName: String): Int {
-    TODO()
+    val file = File(inputName).readLines()
+    val field = ArrayList<IntArray>()
+    for (line in file) {
+        field += line.split(' ').map { it.toInt() }.toIntArray()
+    }
+    val height = field.size
+    val width = field[0].size
+    for (i in 1 until height) field[i][0] += field[i - 1][0]
+    for (j in 1 until width) field[0][j] += field[0][j - 1]
+    for (i in 1 until height) {
+        for (j in 1 until width) {
+            if (min(field[i - 1][j], field[i][j - 1]) <= field[i - 1][j - 1])
+                field[i][j] += min(field[i - 1][j], field[i][j - 1])
+            else field[i][j] += field[i - 1][j - 1]
+        }
+    }
+    return field[height - 1][width - 1]
 }
+
 
 // Задачу "Максимальное независимое множество вершин в графе без циклов"
 // смотрите в уроке 5
