@@ -123,12 +123,12 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
 
         private var current: Node<T>? = null
-        private var deque = ArrayDeque<Node<T>>()
+        private var stack = Stack<Node<T>>()
 
         init {
             current = root
             while (current != null) {
-                deque.push(current)
+                stack.push(current)
                 current = current!!.left
             }
         }
@@ -145,7 +145,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          */
         //Время O(1)
         //Память O(1)
-        override fun hasNext(): Boolean = !deque.isEmpty()
+        override fun hasNext(): Boolean = !stack.isEmpty()
 
         /**
          * Получение следующего элемента
@@ -163,13 +163,13 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         //Время O(N)
         //Память O(1)
         override fun next(): T {
-            if (deque.isEmpty()) throw NoSuchElementException()
-            var node = deque.pop()
+            if (stack.isEmpty()) throw NoSuchElementException()
+            var node = stack.pop()
             current = node
             if (node.right != null) {
                 node = node.right
                 while (true) {
-                    deque.push(node)
+                    stack.push(node)
                     node = node.left
                 }
             }
