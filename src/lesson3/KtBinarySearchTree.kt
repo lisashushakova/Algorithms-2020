@@ -168,7 +168,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
             current = node
             if (node.right != null) {
                 node = node.right
-                while (true) {
+                while (node != null) {
                     stack.push(node)
                     node = node.left
                 }
