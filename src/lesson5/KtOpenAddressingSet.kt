@@ -136,7 +136,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
             return current as T
         }
 
-        //Время O(1)
+        //Время O(N)
         //Память O(1)
         override fun remove() {
             if (current == null) throw IllegalStateException()

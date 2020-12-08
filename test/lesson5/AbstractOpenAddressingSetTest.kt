@@ -74,6 +74,11 @@ abstract class AbstractOpenAddressingSetTest {
                     expectedSize, openAddressingSet.size,
                     "The size of the set is not as expected."
                 )
+                val mySet = KtOpenAddressingSet<Any>(2)
+                val remove1 = "ПАНЭЛЛИНИЗМ"
+                val remove2 = 1337
+                assertFalse { mySet.remove(remove1) }
+                assertFalse { mySet.remove(remove2) }
             }
         }
     }
@@ -116,6 +121,9 @@ abstract class AbstractOpenAddressingSetTest {
             assertFailsWith<NoSuchElementException>("Something was supposedly returned after the elements ended") {
                 openAddressingSetIter.next()
             }
+            val mySet = KtOpenAddressingSet<Any>(2)
+            val iterator = mySet.iterator()
+            assertFailsWith<NoSuchElementException> { iterator.next() }
             println("All clear!")
         }
     }
@@ -173,6 +181,19 @@ abstract class AbstractOpenAddressingSetTest {
                     "Open addressing set has the element $element that is not in control set."
                 )
             }
+            val mySet = KtOpenAddressingSet<Int>(5)
+            mySet.add(84671)
+            mySet.add(353765786)
+            mySet.add(3)
+            mySet.add(353786)
+            mySet.add(37686)
+            mySet.remove(3)
+            val forTestSet = KtOpenAddressingSet<Int>(5)
+            forTestSet.add(84671)
+            forTestSet.add(353765786)
+            forTestSet.add(353786)
+            forTestSet.add(37686)
+            assertEquals(forTestSet, mySet)
             println("All clear!")
         }
     }
